@@ -1,5 +1,7 @@
 import { lstatSync, readdirSync } from 'fs'
 import { join } from 'path'
+import ffprobe from 'ffprobe'
+import ffprobeStatic from 'ffprobe-static'
 
 const ROOT_DIRECTORIES = {
   EXPERTS: 'Expertos',
@@ -49,6 +51,18 @@ const naturalCompare = (a, b) => {
   return ax.length - bx.length
 }
 
+const parseToMMSS = (text) => {
+  const secNum = parseInt(text, 10)
+  let hours = Math.floor(secNum / 3600)
+  let minutes = Math.floor((secNum - (hours * 3600)) / 60)
+  let seconds = secNum - (hours * 3600) - (minutes * 60)
+
+  if (hours < 10) hours = `0${hours}`
+  if (minutes < 10) minutes = `0${minutes}`
+  if (seconds < 10) seconds = `0${seconds}`
+  return `${minutes}:${seconds}`
+}
+
 // Warnings
 const warningRootNoContent = () => log.push('La carpeta raíz no tiene contenido')
 const warningNoContent = breadCrumb => log.push(`La carpeta ${breadCrumb.join(' > ')} no tiene contenido`)
@@ -86,6 +100,27 @@ const newPresentation = ({ path, name, breadCrumb }) => {
 
 // }
 
+const readVideoDir = (path, name, breadCrumb) => {
+  debugger
+  const files = getFiles(path).sort(naturalCompare)
+  if (files) {
+    return files.map(name => {
+      ffprobe(join(path, name), { path: ffprobeStatic.path })
+        .then(info => {
+          return {
+            name,
+            path,
+            breadCrumb,
+            duration: parseToMMSS(info.streams[0].duration)
+          }
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    })
+  }
+}
+
 const readSlides = (path, name, breadCrumb) => {
   const files = getFiles(path)
   if (!files) warningNoSlides(name)
@@ -107,7 +142,7 @@ const readPresentation = ({ path, name, breadCrumb }) => {
           // presentation.audios = readAudioDir(path)
           break
         case PRESENTATION_DIRECTORIES.VIDEOS:
-          // presentation.videos = readVideoDir(path)
+          presentation.videos = readVideoDir(join(path, name))
           break
         case PRESENTATION_DIRECTORIES.SLIDES:
           presentation.slides = readSlides(join(path, name))
