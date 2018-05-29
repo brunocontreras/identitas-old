@@ -1,4 +1,5 @@
-import fs from 'fs'
+import { lstatSync, readdirSync } from 'fs'
+import { join } from 'path'
 
 const ROOT_DIRECTORIES = {
   EXPERTS: 'Expertos',
@@ -7,18 +8,19 @@ const ROOT_DIRECTORIES = {
   CONFERENCES: 'Conferencias'
 }
 
-// const PRES_DIRECTORIES = {
-//   AUDIOS: 'Audios',
-//   LYRICS: 'Letras',
-//   SLIDES: 'PowerPoint',
-//   VIDEOS: 'Vídeos'
-// }
+const PRESENTATION_DIRECTORIES = {
+  AUDIOS: 'Audio',
+  LYRICS: 'Letras',
+  VIDEOS: 'Videos',
+  SLIDES: 'PowerPoint'
+}
 
+// Data
 const data = {
-  experts: [],
-  family: [],
-  training: [],
-  conferences: [],
+  experts: undefined,
+  family: undefined,
+  training: undefined,
+  conferences: undefined,
   presentations: {},
   videos: {},
   audios: {}
@@ -30,10 +32,44 @@ let presentationIdx = 0
 // let videoIdx = 0
 // let audioIdx = 0
 
-const newPresentation = ({ path, name }) => {
+// Helpers
+const naturalCompare = (a, b) => {
+  let ax = []
+  let bx = []
+  a.replace(/(\d+)|(\D+)/g, (_, $1, $2) => { ax.push([$1 || Infinity, $2 || '']) })
+  b.replace(/(\d+)|(\D+)/g, (_, $1, $2) => { bx.push([$1 || Infinity, $2 || '']) })
+
+  while (ax.length && bx.length) {
+    const an = ax.shift()
+    const bn = bx.shift()
+    const nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1])
+    if (nn) return nn
+  }
+
+  return ax.length - bx.length
+}
+
+// Warnings
+const warningRootNoContent = () => log.push('La carpeta raíz no tiene contenido')
+const warningNoContent = breadCrumb => log.push(`La carpeta ${breadCrumb.join(' > ')} no tiene contenido`)
+const warningNoDirectory = directory => log.push(`No existe la carpeta '${directory}'`)
+const warningNoSlides = name => log.push(`La presentación ${name} no tiene diapositivas`)
+const checkData = () => {
+  if (data.experts === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.EXPERTS))
+  if (data.family === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.FAMILY))
+  if (data.training === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.TRAINING))
+  if (data.conferences === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.CONFERENCES))
+}
+
+const isDirectory = path => lstatSync(path).isDirectory()
+const isFile = path => lstatSync(path).isFile()
+const getDirectories = path => readdirSync(path).filter(name => isDirectory(join(path, name)))
+const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name)))
+
+const newPresentation = ({ path, name, breadCrumb }) => {
   presentationIdx++
   const id = presentationIdx.toString()
-  const presentation = { id, path, name }
+  const presentation = { id, path, name, breadCrumb }
   data.presentations[id] = presentation
   return presentation
 }
@@ -50,30 +86,31 @@ const newPresentation = ({ path, name }) => {
 
 // }
 
-const readSlidesDir = path => {
-  const files = fs.readdirSync(path)
-  if (files) {
-    return files.sort()
+const readSlides = (path, name, breadCrumb) => {
+  const files = getFiles(path)
+  if (!files) warningNoSlides(name)
+  else {
+    return files.sort(naturalCompare)
   }
 }
 
 const readPresentation = ({ path, name, breadCrumb }) => {
-  const files = fs.readdirSync(path)
-  if (!files) {
-    log.push(`La carpeta ${breadCrumb.join(' > ')} no tiene contenido`)
+  const directories = getDirectories(path).sort(naturalCompare)
+  if (!directories) {
+    warningNoContent(breadCrumb)
     return []
   } else {
-    const presentation = newPresentation({ path, name })
-    files.forEach(file => {
-      switch (file) {
-        case 'Audios':
+    const presentation = newPresentation({ path, name, breadCrumb })
+    directories.forEach(name => {
+      switch (name) {
+        case PRESENTATION_DIRECTORIES.AUDIOS:
           // presentation.audios = readAudioDir(path)
           break
-        case 'Videos':
+        case PRESENTATION_DIRECTORIES.VIDEOS:
           // presentation.videos = readVideoDir(path)
           break
-        case 'PowerPoint':
-          presentation.slides = readSlidesDir(`${path}\\${file}`)
+        case PRESENTATION_DIRECTORIES.SLIDES:
+          presentation.slides = readSlides(join(path, name))
           break
       }
     })
@@ -81,59 +118,68 @@ const readPresentation = ({ path, name, breadCrumb }) => {
   }
 }
 
-const readDir = ({ path, name, breadCrumb, isContainer = true }) => {
-  const files = fs.readdirSync(path)
-  if (!files) {
-    log.push(`La carpeta ${breadCrumb.join(' > ')} no tiene contenido`)
+const readPresentations = ({ path, name, breadCrumb }) => {
+  const directories = getDirectories(path).sort(naturalCompare)
+  if (!directories) {
+    warningNoContent(breadCrumb)
     return []
   } else {
-    if (isContainer) {
-      return files.map(file => ({
-        name: file,
-        presentations: readDir({
-          path: `${path}\\${file}`,
-          name: file,
-          breadCrumb: [...breadCrumb, file],
-          isContainer: false
-        })
-      }))
-    } else {
-      return files.map(file => readPresentation({
-        path: `${path}\\${file}`,
-        name: file,
-        breadCrumb: [...breadCrumb, file]
-      }))
-    }
+    return directories.map(name => readPresentation({
+      path: join(path, name),
+      name,
+      breadCrumb: [...breadCrumb, name]
+    }))
   }
 }
 
-const checkData = () => {
-  if (data.experts.length === 0) log.push(`No existe la carpeta '${ROOT_DIRECTORIES.EXPERTS}'`)
-  if (data.family.length === 0) log.push(`No existe la carpeta '${ROOT_DIRECTORIES.FAMILY}'`)
-  if (data.training.length === 0) log.push(`No existe la carpeta '${ROOT_DIRECTORIES.TRAINING}'`)
-  if (data.conferences.length === 0) log.push(`No existe la carpeta '${ROOT_DIRECTORIES.CONFERENCES}'`)
+const readCourses = ({ path, name, breadCrumb }) => {
+  const directories = getDirectories(path).sort(naturalCompare)
+  if (!directories) {
+    warningNoContent(breadCrumb)
+    return []
+  } else {
+    return directories.map(name => ({
+      name,
+      presentations: readPresentations({
+        path: join(path, name),
+        name,
+        breadCrumb: [...breadCrumb, name]
+      })
+    }))
+  }
 }
 
 const readRootDirectory = path => {
-  debugger
-  const files = fs.readdirSync(path)
-  if (!files) log.push('La carpeta raíz no tiene contenido')
+  const directories = getDirectories(path)
+  if (!directories) warningRootNoContent()
   else {
-    files.forEach(file => {
-      const filePath = `${path}\\${file}`
-      const breadCrumb = [file]
-      switch (file) {
+    directories.forEach(name => {
+      const dirPath = join(path, name)
+      const breadCrumb = [name]
+      switch (name) {
         case ROOT_DIRECTORIES.EXPERTS:
-          data.experts = readDir({ path: filePath, name: file, breadCrumb })
+          data.experts = {
+            name: ROOT_DIRECTORIES.EXPERTS,
+            courses: readCourses({ path: dirPath, name, breadCrumb })
+          }
           break
         case ROOT_DIRECTORIES.FAMILY:
-          data.family = readDir({ path: filePath, name: file, breadCrumb })
+          data.family = {
+            name: ROOT_DIRECTORIES.FAMILY,
+            courses: readCourses({ path: dirPath, name, breadCrumb })
+          }
           break
         case ROOT_DIRECTORIES.TRAINING:
-          data.training = readDir({ path: filePath, name: file, breadCrumb })
+          data.training = {
+            name: ROOT_DIRECTORIES.TRAINING,
+            courses: readCourses({ path: dirPath, name, breadCrumb })
+          }
           break
         case ROOT_DIRECTORIES.CONFERENCES:
-          data.conferences = readDir({ path: filePath, name: file, breadCrumb, isContainer: false })
+          data.conferences = {
+            name: ROOT_DIRECTORIES.CONFERENCES,
+            presentations: readPresentations({ path: dirPath, name, breadCrumb })
+          }
           break
       }
     })
