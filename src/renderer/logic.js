@@ -13,7 +13,7 @@ const ROOT_DIRECTORIES = {
 const PRESENTATION_DIRECTORIES = {
   AUDIOS: 'Audio',
   LYRICS: 'Letras',
-  VIDEOS: 'Videos',
+  VIDEOS: 'Vídeos',
   SLIDES: 'PowerPoint'
 }
 
@@ -29,10 +29,6 @@ const data = {
 }
 
 const log = []
-
-let presentationIdx = 0
-// let videoIdx = 0
-// let audioIdx = 0
 
 // Helpers
 const naturalCompare = (a, b) => {
@@ -77,8 +73,13 @@ const checkData = () => {
 
 const isDirectory = path => lstatSync(path).isDirectory()
 const isFile = path => lstatSync(path).isFile()
-const getDirectories = path => readdirSync(path).filter(name => isDirectory(join(path, name)))
-const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name)))
+const getDirectories = path => readdirSync(path).filter(name => isDirectory(join(path, name))).sort(naturalCompare)
+const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name))).sort(naturalCompare)
+
+// Constructores
+let presentationIdx = 0
+let videoIdx = 0
+// let audioIdx = 0
 
 const newPresentation = ({ path, name, breadCrumb }) => {
   presentationIdx++
@@ -88,11 +89,15 @@ const newPresentation = ({ path, name, breadCrumb }) => {
   return presentation
 }
 
+const newVideo = ({ path, name, breadCrumb }) => {
+  videoIdx++
+  const id = videoIdx.toString()
+  const video = { id, path, name, breadCrumb }
+  data.videos[id] = video
+  return video
+}
+
 // const newAudio = ({ path, name }) => {
-
-// }
-
-// const newVideo = ({ path, name }) => {
 
 // }
 
@@ -100,37 +105,35 @@ const newPresentation = ({ path, name, breadCrumb }) => {
 
 // }
 
-const readVideoDir = (path, name, breadCrumb) => {
-  debugger
-  const files = getFiles(path).sort(naturalCompare)
+const readVideoDir = ({ path, name, breadCrumb }) => {
+  const files = getFiles(path)
   if (files) {
     return files.map(name => {
+      const video = newVideo({
+        path: join(path, name),
+        name,
+        breadCrumb
+      })
       ffprobe(join(path, name), { path: ffprobeStatic.path })
         .then(info => {
-          return {
-            name,
-            path,
-            breadCrumb,
-            duration: parseToMMSS(info.streams[0].duration)
-          }
+          video.duration = parseToMMSS(info.streams[0].duration)
         })
         .catch(err => {
           console.error(err)
         })
+      return video.id
     })
   }
 }
 
-const readSlides = (path, name, breadCrumb) => {
+const readSlides = ({ path, name }) => {
   const files = getFiles(path)
   if (!files) warningNoSlides(name)
-  else {
-    return files.sort(naturalCompare)
-  }
+  else return files
 }
 
 const readPresentation = ({ path, name, breadCrumb }) => {
-  const directories = getDirectories(path).sort(naturalCompare)
+  const directories = getDirectories(path)
   if (!directories) {
     warningNoContent(breadCrumb)
     return []
@@ -142,10 +145,17 @@ const readPresentation = ({ path, name, breadCrumb }) => {
           // presentation.audios = readAudioDir(path)
           break
         case PRESENTATION_DIRECTORIES.VIDEOS:
-          presentation.videos = readVideoDir(join(path, name))
+          presentation.videos = readVideoDir({
+            path: join(path, name),
+            name,
+            breadCrumb: [...breadCrumb, name]
+          })
           break
         case PRESENTATION_DIRECTORIES.SLIDES:
-          presentation.slides = readSlides(join(path, name))
+          presentation.slides = readSlides({
+            path: join(path, name),
+            name
+          })
           break
       }
     })
@@ -154,7 +164,7 @@ const readPresentation = ({ path, name, breadCrumb }) => {
 }
 
 const readPresentations = ({ path, name, breadCrumb }) => {
-  const directories = getDirectories(path).sort(naturalCompare)
+  const directories = getDirectories(path)
   if (!directories) {
     warningNoContent(breadCrumb)
     return []
@@ -168,7 +178,7 @@ const readPresentations = ({ path, name, breadCrumb }) => {
 }
 
 const readCourses = ({ path, name, breadCrumb }) => {
-  const directories = getDirectories(path).sort(naturalCompare)
+  const directories = getDirectories(path)
   if (!directories) {
     warningNoContent(breadCrumb)
     return []
@@ -185,6 +195,7 @@ const readCourses = ({ path, name, breadCrumb }) => {
 }
 
 const readRootDirectory = path => {
+  console.time('identitas')
   const directories = getDirectories(path)
   if (!directories) warningRootNoContent()
   else {
@@ -219,6 +230,7 @@ const readRootDirectory = path => {
       }
     })
     checkData()
+    console.timeEnd('identitas')
   }
 }
 
