@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync } from 'fs'
+import { lstatSync, readdirSync, existsSync } from 'fs'
 import { join } from 'path'
 // import ffprobe from 'ffprobe'
 // import ffprobeStatic from 'ffprobe-static'
@@ -11,7 +11,7 @@ const ROOT_DIRECTORIES = {
 }
 
 const PRESENTATION_DIRECTORIES = {
-  AUDIOS: 'Audio',
+  AUDIOS: 'Audios',
   LYRICS: 'Letras',
   VIDEOS: 'Vídeos',
   SLIDES: 'PowerPoint'
@@ -81,9 +81,6 @@ const isEqual = (name1, name2) => normalize(name1.toLowerCase()) === normalize(n
 
 // Constructores
 let presentationIdx = 0
-let videoIdx = 0
-// let audioIdx = 0
-
 const newPresentation = ({ path, name, breadCrumb }) => {
   presentationIdx++
   const id = presentationIdx.toString()
@@ -92,6 +89,7 @@ const newPresentation = ({ path, name, breadCrumb }) => {
   return presentation
 }
 
+let videoIdx = 0
 const newVideo = ({ path, name, breadCrumb }) => {
   videoIdx++
   const id = videoIdx.toString()
@@ -100,15 +98,37 @@ const newVideo = ({ path, name, breadCrumb }) => {
   return video
 }
 
-// const newAudio = ({ path, name }) => {
+let audioIdx = 0
+const newAudio = ({ path, lyricsDirPath, name, breadCrumb }) => {
+  audioIdx++
+  const id = audioIdx.toString()
+  const audio = { id, path, name, breadCrumb }
 
-// }
+  const lyricsPath = join(lyricsDirPath, name)
+  if (existsSync(lyricsPath) && isFile(lyricsPath)) {
+    audio.lyricsPath = lyricsPath
+  }
 
-// const readAudioDir = path => {
+  data.audios[id] = audio
+  return audio
+}
 
-// }
+const readAudioDir = ({ path, lyricsDirPath, breadCrumb }) => {
+  const files = getFiles(path)
+  if (files) {
+    return files.map(name => {
+      const audio = newAudio({
+        path: join(path, name),
+        lyricsDirPath,
+        name,
+        breadCrumb
+      })
+      return audio.id
+    })
+  }
+}
 
-const readVideoDir = ({ path, name, breadCrumb }) => {
+const readVideoDir = ({ path, breadCrumb }) => {
   const files = getFiles(path)
   if (files) {
     return files.map(name => {
@@ -144,6 +164,13 @@ const readPresentation = ({ path, name, breadCrumb }) => {
     const presentation = newPresentation({ path, name, breadCrumb })
     directories.forEach(name => {
       if (isEqual(PRESENTATION_DIRECTORIES.AUDIOS, name)) {
+        const existsLyrics = directories.find(d => isEqual(PRESENTATION_DIRECTORIES.LYRICS, d))
+        presentation.audios = readAudioDir({
+          path: join(path, name),
+          lyricsDirPath: existsLyrics ? join(path, PRESENTATION_DIRECTORIES.LYRICS) : '',
+          name,
+          breadCrumb: [...breadCrumb, name]
+        })
       }
       if (isEqual(PRESENTATION_DIRECTORIES.VIDEOS, name)) {
         presentation.videos = readVideoDir({
