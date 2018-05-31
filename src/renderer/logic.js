@@ -1,7 +1,7 @@
 import { lstatSync, readdirSync } from 'fs'
 import { join } from 'path'
-import ffprobe from 'ffprobe'
-import ffprobeStatic from 'ffprobe-static'
+// import ffprobe from 'ffprobe'
+// import ffprobeStatic from 'ffprobe-static'
 
 const ROOT_DIRECTORIES = {
   EXPERTS: 'Expertos',
@@ -47,17 +47,17 @@ const naturalCompare = (a, b) => {
   return ax.length - bx.length
 }
 
-const parseToMMSS = (text) => {
-  const secNum = parseInt(text, 10)
-  let hours = Math.floor(secNum / 3600)
-  let minutes = Math.floor((secNum - (hours * 3600)) / 60)
-  let seconds = secNum - (hours * 3600) - (minutes * 60)
+// const parseToMMSS = (text) => {
+//   const secNum = parseInt(text, 10)
+//   let hours = Math.floor(secNum / 3600)
+//   let minutes = Math.floor((secNum - (hours * 3600)) / 60)
+//   let seconds = secNum - (hours * 3600) - (minutes * 60)
 
-  if (hours < 10) hours = `0${hours}`
-  if (minutes < 10) minutes = `0${minutes}`
-  if (seconds < 10) seconds = `0${seconds}`
-  return `${minutes}:${seconds}`
-}
+//   if (hours < 10) hours = `0${hours}`
+//   if (minutes < 10) minutes = `0${minutes}`
+//   if (seconds < 10) seconds = `0${seconds}`
+//   return `${minutes}:${seconds}`
+// }
 
 // Warnings
 const warningRootNoContent = () => log.push('La carpeta raíz no tiene contenido')
@@ -65,16 +65,19 @@ const warningNoContent = breadCrumb => log.push(`La carpeta ${breadCrumb.join(' 
 const warningNoDirectory = directory => log.push(`No existe la carpeta '${directory}'`)
 const warningNoSlides = name => log.push(`La presentación ${name} no tiene diapositivas`)
 const checkData = () => {
-  if (data.experts === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.EXPERTS))
-  if (data.family === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.FAMILY))
-  if (data.training === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.TRAINING))
-  if (data.conferences === undefined) log.push(warningNoDirectory(ROOT_DIRECTORIES.CONFERENCES))
+  if (data.experts === undefined) warningNoDirectory(ROOT_DIRECTORIES.EXPERTS)
+  if (data.family === undefined) warningNoDirectory(ROOT_DIRECTORIES.FAMILY)
+  if (data.training === undefined) warningNoDirectory(ROOT_DIRECTORIES.TRAINING)
+  if (data.conferences === undefined) warningNoDirectory(ROOT_DIRECTORIES.CONFERENCES)
 }
 
 const isDirectory = path => lstatSync(path).isDirectory()
 const isFile = path => lstatSync(path).isFile()
 const getDirectories = path => readdirSync(path).filter(name => isDirectory(join(path, name))).sort(naturalCompare)
 const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name))).sort(naturalCompare)
+
+const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+const isEqual = (name1, name2) => normalize(name1.toLowerCase()) === normalize(name2.toLowerCase())
 
 // Constructores
 let presentationIdx = 0
@@ -114,13 +117,13 @@ const readVideoDir = ({ path, name, breadCrumb }) => {
         name,
         breadCrumb
       })
-      ffprobe(join(path, name), { path: ffprobeStatic.path })
-        .then(info => {
-          video.duration = parseToMMSS(info.streams[0].duration)
-        })
-        .catch(err => {
-          console.error(err)
-        })
+      // ffprobe(join(path, name), { path: ffprobeStatic.path })
+      //   .then(info => {
+      //     video.duration = parseToMMSS(info.streams[0].duration)
+      //   })
+      //   .catch(err => {
+      //     console.error(err)
+      //   })
       return video.id
     })
   }
@@ -140,23 +143,20 @@ const readPresentation = ({ path, name, breadCrumb }) => {
   } else {
     const presentation = newPresentation({ path, name, breadCrumb })
     directories.forEach(name => {
-      switch (name) {
-        case PRESENTATION_DIRECTORIES.AUDIOS:
-          // presentation.audios = readAudioDir(path)
-          break
-        case PRESENTATION_DIRECTORIES.VIDEOS:
-          presentation.videos = readVideoDir({
-            path: join(path, name),
-            name,
-            breadCrumb: [...breadCrumb, name]
-          })
-          break
-        case PRESENTATION_DIRECTORIES.SLIDES:
-          presentation.slides = readSlides({
-            path: join(path, name),
-            name
-          })
-          break
+      if (isEqual(PRESENTATION_DIRECTORIES.AUDIOS, name)) {
+      }
+      if (isEqual(PRESENTATION_DIRECTORIES.VIDEOS, name)) {
+        presentation.videos = readVideoDir({
+          path: join(path, name),
+          name,
+          breadCrumb: [...breadCrumb, name]
+        })
+      }
+      if (isEqual(PRESENTATION_DIRECTORIES.SLIDES, name)) {
+        presentation.slides = readSlides({
+          path: join(path, name),
+          name
+        })
       }
     })
     return presentation.id
@@ -231,6 +231,10 @@ const readRootDirectory = path => {
     })
     checkData()
     console.timeEnd('identitas')
+    return {
+      data,
+      log
+    }
   }
 }
 
