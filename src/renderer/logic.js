@@ -79,6 +79,8 @@ const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name
 const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 const isEqual = (name1, name2) => normalize(name1.toLowerCase()) === normalize(name2.toLowerCase())
 const removeExtension = name => name.replace(/\.[^/.]+$/, '')
+const removeOrder = name => name.replace(/^(\d+)[.\-_]*/, '').trim()
+const extractName = name => removeExtension(removeOrder(name))
 
 // Constructores
 let presentationIdx = 0
@@ -122,7 +124,7 @@ const readAudioDir = ({ path, lyricsDirPath, breadCrumb }) => {
       const audio = newAudio({
         path: join(path, name),
         lyricsDirPath,
-        name: removeExtension(name),
+        name: extractName(name),
         breadCrumb
       })
       return audio.id
@@ -136,7 +138,7 @@ const readVideoDir = ({ path, breadCrumb }) => {
     return files.map(name => {
       const video = newVideo({
         path: join(path, name),
-        name: removeExtension(name),
+        name: extractName(name),
         breadCrumb
       })
       // ffprobe(join(path, name), { path: ffprobeStatic.path })
@@ -154,7 +156,7 @@ const readVideoDir = ({ path, breadCrumb }) => {
 const readSlides = ({ path, name }) => {
   const files = getFiles(path)
   if (!files) warningNoSlides(name)
-  else return files
+  else return files.map(name => join(path, name))
 }
 
 const readPresentation = ({ path, name, breadCrumb }) => {
