@@ -82,6 +82,11 @@ const removeExtension = name => name.replace(/\.[^/.]+$/, '')
 const removeOrder = name => name.replace(/^(\d+)[.\-_]*/, '').trim()
 const extractName = name => removeExtension(removeOrder(name))
 
+const audioExtensions = Object.values(data.audios).map(x => x.path.slice(-4)).filter((value, index, self) => {
+  return self.indexOf(value) === index
+})
+console.log(audioExtensions)
+
 // Constructores
 let presentationIdx = 0
 const newPresentation = ({ path, name, breadCrumb }) => {

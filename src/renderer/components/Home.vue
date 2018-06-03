@@ -7,6 +7,15 @@
       <h1 v-if="data.family">Familia</h1>
       <h1 v-if="data.training">Formación</h1>
       <h1 v-if="data.conferences">Conferencias</h1>
+      <ul>
+        <li v-for="(video, index) in data.videos" :key="video.id">
+          <strong>{{ index }}. {{ video.name }}</strong>
+          <div style="color: #666">({{ video.path }})</div>
+          <video :src="video.path" controls width="300" preload="none">
+            Tu navegador no admite el elemento <code>video</code>.
+          </video>
+        </li>
+      </ul>
     </template>
   </div>
 </template>
