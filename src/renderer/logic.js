@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync, existsSync } from 'fs'
+import { lstatSync, readdirSync } from 'fs'
 import { join } from 'path'
 // import ffprobe from 'ffprobe'
 // import ffprobeStatic from 'ffprobe-static'
@@ -78,6 +78,7 @@ const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name
 
 const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 const isEqual = (name1, name2) => normalize(name1.toLowerCase()) === normalize(name2.toLowerCase())
+const removeExtension = name => name.replace(/\.[^/.]+$/, '')
 
 // Constructores
 let presentationIdx = 0
@@ -104,8 +105,9 @@ const newAudio = ({ path, lyricsDirPath, name, breadCrumb }) => {
   const id = audioIdx.toString()
   const audio = { id, path, name, breadCrumb }
 
-  const lyricsPath = join(lyricsDirPath, name)
-  if (existsSync(lyricsPath) && isFile(lyricsPath)) {
+  const lyricsFile = `${name}.txt`
+  const lyricsPath = join(lyricsDirPath, lyricsFile)
+  if (isFile(lyricsPath)) {
     audio.lyricsPath = lyricsPath
   }
 
@@ -120,7 +122,7 @@ const readAudioDir = ({ path, lyricsDirPath, breadCrumb }) => {
       const audio = newAudio({
         path: join(path, name),
         lyricsDirPath,
-        name,
+        name: removeExtension(name),
         breadCrumb
       })
       return audio.id
@@ -134,7 +136,7 @@ const readVideoDir = ({ path, breadCrumb }) => {
     return files.map(name => {
       const video = newVideo({
         path: join(path, name),
-        name,
+        name: removeExtension(name),
         breadCrumb
       })
       // ffprobe(join(path, name), { path: ffprobeStatic.path })
