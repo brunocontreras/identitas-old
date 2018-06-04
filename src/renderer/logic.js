@@ -79,7 +79,7 @@ const getFiles = path => readdirSync(path).filter(name => isFile(join(path, name
 const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 const isEqual = (name1, name2) => normalize(name1.toLowerCase()) === normalize(name2.toLowerCase())
 const removeExtension = name => name.replace(/\.[^/.]+$/, '')
-const removeOrder = name => name.replace(/^(\d+)[.\-_]*/, '').trim()
+const removeOrder = name => name.replace(/.*?(?=[a-z]|[A-Z])/, '')
 const extractName = name => removeExtension(removeOrder(name))
 
 const audioExtensions = Object.values(data.audios).map(x => x.path.slice(-4)).filter((value, index, self) => {
@@ -238,31 +238,29 @@ const readRootDirectory = path => {
     directories.forEach(name => {
       const dirPath = join(path, name)
       const breadCrumb = [name]
-      switch (name) {
-        case ROOT_DIRECTORIES.EXPERTS:
-          data.experts = {
-            name: ROOT_DIRECTORIES.EXPERTS,
-            courses: readCourses({ path: dirPath, name, breadCrumb })
-          }
-          break
-        case ROOT_DIRECTORIES.FAMILY:
-          data.family = {
-            name: ROOT_DIRECTORIES.FAMILY,
-            courses: readCourses({ path: dirPath, name, breadCrumb })
-          }
-          break
-        case ROOT_DIRECTORIES.TRAINING:
-          data.training = {
-            name: ROOT_DIRECTORIES.TRAINING,
-            courses: readCourses({ path: dirPath, name, breadCrumb })
-          }
-          break
-        case ROOT_DIRECTORIES.CONFERENCES:
-          data.conferences = {
-            name: ROOT_DIRECTORIES.CONFERENCES,
-            presentations: readPresentations({ path: dirPath, name, breadCrumb })
-          }
-          break
+      if (isEqual(ROOT_DIRECTORIES.EXPERTS, name)) {
+        data.experts = {
+          name: ROOT_DIRECTORIES.EXPERTS,
+          courses: readCourses({ path: dirPath, name, breadCrumb })
+        }
+      }
+      if (isEqual(ROOT_DIRECTORIES.FAMILY, name)) {
+        data.family = {
+          name: ROOT_DIRECTORIES.FAMILY,
+          courses: readCourses({ path: dirPath, name, breadCrumb })
+        }
+      }
+      if (isEqual(ROOT_DIRECTORIES.TRAINING, name)) {
+        data.training = {
+          name: ROOT_DIRECTORIES.TRAINING,
+          courses: readCourses({ path: dirPath, name, breadCrumb })
+        }
+      }
+      if (isEqual(ROOT_DIRECTORIES.CONFERENCES, name)) {
+        data.conferences = {
+          name: ROOT_DIRECTORIES.CONFERENCES,
+          presentations: readPresentations({ path: dirPath, name, breadCrumb })
+        }
       }
     })
     checkData()
