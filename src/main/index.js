@@ -31,6 +31,8 @@ function createWindow () {
   mainWindow.maximize()
   mainWindow.show()
 
+  mainWindow.setMenu(null)
+
   mainWindow.on('closed', () => {
     mainWindow = null
   })
