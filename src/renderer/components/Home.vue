@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video src="/static/bg_video.mp4" autoplay class="video" loop></video>
+    <app-video></app-video>
     <div>Selecciona una carpeta</div>
     <button @click="selectDirectory">Seleccionar carpeta</button>
     <template v-if="data">
@@ -22,9 +22,16 @@
 </template>
 
 <script>
+/* Logic */
 import readRootDirectory from '@/logic'
+/* Components */
+import AppVideo from '@/components/AppVideo'
+
 export default {
   name: 'Home',
+  components: {
+    AppVideo
+  },
   data: () => ({
     data: null,
     log: null
@@ -51,10 +58,5 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.video {
-  height: 100vh;
-  position: fixed;
-  z-index: -1;
-}
+<style>
 </style>
