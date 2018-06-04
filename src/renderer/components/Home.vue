@@ -1,6 +1,6 @@
 <template>
   <div>
-    <app-video></app-video>
+    <app-video-background />
     <div>Selecciona una carpeta</div>
     <button @click="selectDirectory">Seleccionar carpeta</button>
     <template v-if="data">
@@ -25,12 +25,12 @@
 /* Logic */
 import readRootDirectory from '@/logic'
 /* Components */
-import AppVideo from '@/components/AppVideo'
+import AppVideoBackground from '@/components/AppVideoBackground'
 
 export default {
   name: 'Home',
   components: {
-    AppVideo
+    AppVideoBackground
   },
   data: () => ({
     data: null,
