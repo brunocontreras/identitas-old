@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video src="/static/bg_video.mp4" autoplay class="video"></video>
+    <video src="/static/bg_video.mp4" autoplay class="video" loop></video>
     <div>Selecciona una carpeta</div>
     <button @click="selectDirectory">Seleccionar carpeta</button>
     <template v-if="data">
@@ -54,5 +54,7 @@ export default {
 <style scoped lang="scss">
 .video {
   height: 100vh;
+  position: fixed;
+  z-index: -1;
 }
 </style>
