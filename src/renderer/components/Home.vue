@@ -1,9 +1,8 @@
 <template>
   <div>
     <app-video-background />
-    <div>Selecciona una carpeta</div>
-    <button @click="selectDirectory">Seleccionar carpeta</button>
-    <template v-if="data">
+    <app-select-folder v-if="!data" />
+    <template v-else>
       <h1 v-if="data.experts">Expertos</h1>
       <h1 v-if="data.family">Familia</h1>
       <h1 v-if="data.training">Formación</h1>
@@ -23,41 +22,19 @@
 
 <script>
 /* Logic */
-import readRootDirectory from '@/logic'
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 /* Components */
 import AppVideoBackground from '@/components/AppVideoBackground'
+import AppSelectFolder from '@/components/AppSelectFolder'
 
 export default {
   name: 'Home',
   components: {
-    AppVideoBackground
+    AppVideoBackground,
+    AppSelectFolder
   },
   computed: {
     ...mapState(['data'])
-  },
-  methods: {
-    ...mapMutations([
-      'SET_DATA',
-      'SET_LOG'
-    ]),
-    selectedDirectory (paths) {
-      if (paths === undefined) {
-        console.warn('No se escogió ninguna carpeta')
-      } else {
-        const dir = paths[0]
-        const { data, log } = readRootDirectory(dir)
-        this.SET_DATA(data)
-        this.SET_LOG(log)
-      }
-    },
-    selectDirectory () {
-      const options = {
-        title: 'Selecciona una carpeta',
-        properties: ['openDirectory']
-      }
-      this.$electron.remote.dialog.showOpenDialog(options, this.selectedDirectory)
-    }
   }
 }
 </script>
