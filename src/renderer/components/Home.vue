@@ -24,6 +24,7 @@
 <script>
 /* Logic */
 import readRootDirectory from '@/logic'
+import { mapState, mapMutations } from 'vuex'
 /* Components */
 import AppVideoBackground from '@/components/AppVideoBackground'
 
@@ -32,19 +33,22 @@ export default {
   components: {
     AppVideoBackground
   },
-  data: () => ({
-    data: null,
-    log: null
-  }),
+  computed: {
+    ...mapState(['data'])
+  },
   methods: {
+    ...mapMutations([
+      'SET_DATA',
+      'SET_LOG'
+    ]),
     selectedDirectory (paths) {
       if (paths === undefined) {
         console.warn('No se escogió ninguna carpeta')
       } else {
         const dir = paths[0]
         const { data, log } = readRootDirectory(dir)
-        this.data = data
-        this.log = log
+        this.SET_DATA(data)
+        this.SET_LOG(log)
       }
     },
     selectDirectory () {
