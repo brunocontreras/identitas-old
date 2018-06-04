@@ -3,7 +3,9 @@
     <app-video-background />
     <app-select-folder v-if="!data" />
     <template v-else>
-      <h1 v-if="data.experts">Expertos</h1>
+      <app-card imageUrl="/static/conferences.jpg" section="Expertos"></app-card>
+      <app-card imageUrl="/static/conferences.jpg" section="Familia"></app-card>
+      <!-- <h1 v-if="data.experts">Expertos</h1> -->
       <h1 v-if="data.family">Familia</h1>
       <h1 v-if="data.training">Formación</h1>
       <h1 v-if="data.conferences">Conferencias</h1>
@@ -26,12 +28,14 @@ import { mapState } from 'vuex'
 /* Components */
 import AppVideoBackground from '@/components/AppVideoBackground'
 import AppSelectFolder from '@/components/AppSelectFolder'
+import AppCard from '@/components/AppCard'
 
 export default {
   name: 'Home',
   components: {
     AppVideoBackground,
-    AppSelectFolder
+    AppSelectFolder,
+    AppCard
   },
   computed: {
     ...mapState(['data'])
