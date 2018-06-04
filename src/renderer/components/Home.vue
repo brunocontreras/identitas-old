@@ -37,7 +37,6 @@ export default {
         const { data, log } = readRootDirectory(dir)
         this.data = data
         this.log = log
-        debugger
       }
     },
     selectDirectory () {
