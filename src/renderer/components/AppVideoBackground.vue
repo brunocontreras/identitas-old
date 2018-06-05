@@ -1,6 +1,6 @@
 <template>
   <div>
-    <video :src="source" autoplay class="video" loop></video>
+    <video ref="video" :src="source" autoplay class="video" loop @canplay="$emit('canPlay')"></video>
     <div class="video-mask"></div>
   </div>
 </template>

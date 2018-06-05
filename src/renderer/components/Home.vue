@@ -1,11 +1,14 @@
 <template>
   <div>
-    <app-video-background />
+    <app-video-background @canPlay="handleCanPlay" />
     <app-select-folder v-if="!data" />
-    <template v-else>
+    <div class="data-container" v-else>
       <app-card imageUrl="/static/conferences.jpg" section="Expertos"></app-card>
       <app-card imageUrl="/static/conferences.jpg" section="Familia"></app-card>
-      <!-- <h1 v-if="data.experts">Expertos</h1> -->
+      <app-card imageUrl="/static/conferences.jpg" section="Formación"></app-card>
+      <app-card imageUrl="/static/conferences.jpg" section="Conferencias"></app-card>
+      <!--
+      <h1 v-if="data.experts">Expertos</h1>
       <h1 v-if="data.family">Familia</h1>
       <h1 v-if="data.training">Formación</h1>
       <h1 v-if="data.conferences">Conferencias</h1>
@@ -17,8 +20,9 @@
             Tu navegador no admite el elemento <code>video</code>.
           </video>
         </li>
-      </ul>
-    </template>
+      </ul> -->
+    </div>
+    <div class="loading" :class="{ hide: videoLoaded }"></div>
   </div>
 </template>
 
@@ -37,11 +41,38 @@ export default {
     AppSelectFolder,
     AppCard
   },
+  data: () => ({
+    videoLoaded: false
+  }),
   computed: {
     ...mapState(['data'])
+  },
+  methods: {
+    handleCanPlay () {
+      this.videoLoaded = true
+    }
   }
 }
 </script>
 
 <style>
+.data-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 100vh;
+}
+.loading {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  transition: opacity 1.5s;
+  pointer-events: none;
+}
+.hide {
+  opacity: 0;
+}
 </style>

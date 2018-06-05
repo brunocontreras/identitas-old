@@ -23,13 +23,12 @@ export default {
 
 <style>
 .card {
-  width: 20vw;
-  height: 20vw;
-  margin: 2.5vw;
+  width: 15vw;
+  height: 15vw;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-evenly;
 }
 .image {
   background-size: cover;
