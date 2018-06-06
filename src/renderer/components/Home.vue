@@ -3,9 +3,9 @@
     <app-video-background @canPlay="handleCanPlay" />
     <app-select-folder v-if="!data" />
     <div class="data-container" v-else>
-      <app-card imageUrl="/static/conferences.jpg" section="Expertos"></app-card>
-      <app-card imageUrl="/static/conferences.jpg" section="Familia"></app-card>
-      <app-card imageUrl="/static/conferences.jpg" section="Formación"></app-card>
+      <app-card imageUrl="/static/experts.jpg" section="Expertos"></app-card>
+      <app-card imageUrl="/static/family.jpg" section="Familia"></app-card>
+      <app-card imageUrl="/static/training.jpg" section="Formación"></app-card>
       <app-card imageUrl="/static/conferences.jpg" section="Conferencias"></app-card>
       <!--
       <h1 v-if="data.experts">Expertos</h1>
@@ -58,9 +58,10 @@ export default {
 <style>
 .data-container {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-around;
   height: 100vh;
+  padding-bottom: 15vh;
 }
 .loading {
   position: fixed;

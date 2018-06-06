@@ -23,12 +23,12 @@ export default {
 
 <style>
 .card {
-  width: 15vw;
+  width: 19vw;
   height: 15vw;
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 .image {
   background-size: cover;
@@ -41,8 +41,9 @@ export default {
   z-index: -1;
 }
 .label {
-  font-size: 50px;
+  font-size: 3vw;
   color: #fff;
-  margin-right: -5vw;
+  margin-right: -.75em;
+  text-shadow: 2px 2px 2px rgba(0,0,0,.25);
 }
 </style>
