@@ -3,15 +3,27 @@
     <app-video-background @canPlay="handleCanPlay" />
     <app-select-folder v-if="!data" />
     <div class="data-container" v-else>
-      <app-card imageUrl="/static/experts.jpg" section="Expertos"></app-card>
-      <app-card imageUrl="/static/family.jpg" section="Familia"></app-card>
-      <app-card imageUrl="/static/training.jpg" section="Formación"></app-card>
-      <app-card imageUrl="/static/conferences.jpg" section="Conferencias"></app-card>
+      <app-card
+        imageUrl="/static/experts.jpg"
+        :disabled="data.experts.disabled"
+        :section="data.experts.name"
+      ></app-card>
+      <app-card
+        imageUrl="/static/family.jpg"
+        :disabled="data.family.disabled"
+        :section="data.family.name"
+      ></app-card>
+      <app-card
+        imageUrl="/static/training.jpg"
+        :disabled="data.training.disabled"
+        :section="data.training.name"
+      ></app-card>
+      <app-card
+        imageUrl="/static/conferences.jpg"
+        :disabled="data.experts.disabled"
+        :section="data.conferences.name"
+      ></app-card>
       <!--
-      <h1 v-if="data.experts">Expertos</h1>
-      <h1 v-if="data.family">Familia</h1>
-      <h1 v-if="data.training">Formación</h1>
-      <h1 v-if="data.conferences">Conferencias</h1>
       <ul>
         <li v-for="(video, index) in data.videos" :key="video.id">
           <strong>{{ index }}. {{ video.name }}</strong>

@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" :class="{ disabled }">
     <div :style="{ backgroundImage: `url(${imageUrl})` }" class="image"></div>
     <h1 class="label">{{ section }}</h1>
   </div>
@@ -16,6 +16,10 @@ export default {
     section: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: true
     }
   }
 }
@@ -29,6 +33,9 @@ export default {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+}
+.disabled {
+  filter: grayscale(100%);
 }
 .image {
   background-size: cover;

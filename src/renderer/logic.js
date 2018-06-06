@@ -19,10 +19,22 @@ const PRESENTATION_DIRECTORIES = {
 
 // Data
 const data = {
-  experts: undefined,
-  family: undefined,
-  training: undefined,
-  conferences: undefined,
+  experts: {
+    name: ROOT_DIRECTORIES.EXPERTS,
+    disabled: true
+  },
+  family: {
+    name: ROOT_DIRECTORIES.FAMILY,
+    disabled: true
+  },
+  training: {
+    name: ROOT_DIRECTORIES.TRAINING,
+    disabled: true
+  },
+  conferences: {
+    name: ROOT_DIRECTORIES.CONFERENCES,
+    disabled: true
+  },
   presentations: {},
   videos: {},
   audios: {}
@@ -239,28 +251,20 @@ const readRootDirectory = path => {
       const dirPath = join(path, name)
       const breadCrumb = [name]
       if (isEqual(ROOT_DIRECTORIES.EXPERTS, name)) {
-        data.experts = {
-          name: ROOT_DIRECTORIES.EXPERTS,
-          courses: readCourses({ path: dirPath, name, breadCrumb })
-        }
+        data.experts.disabled = false
+        data.experts.courses = readCourses({ path: dirPath, name, breadCrumb })
       }
       if (isEqual(ROOT_DIRECTORIES.FAMILY, name)) {
-        data.family = {
-          name: ROOT_DIRECTORIES.FAMILY,
-          courses: readCourses({ path: dirPath, name, breadCrumb })
-        }
+        data.family.disabled = false
+        data.family.courses = readCourses({ path: dirPath, name, breadCrumb })
       }
       if (isEqual(ROOT_DIRECTORIES.TRAINING, name)) {
-        data.training = {
-          name: ROOT_DIRECTORIES.TRAINING,
-          courses: readCourses({ path: dirPath, name, breadCrumb })
-        }
+        data.training.disabled = true
+        data.training.courses = readCourses({ path: dirPath, name, breadCrumb })
       }
       if (isEqual(ROOT_DIRECTORIES.CONFERENCES, name)) {
-        data.conferences = {
-          name: ROOT_DIRECTORIES.CONFERENCES,
-          presentations: readPresentations({ path: dirPath, name, breadCrumb })
-        }
+        data.conferences.disabled = true
+        data.conferences.presentations = readPresentations({ path: dirPath, name, breadCrumb })
       }
     })
     checkData()
