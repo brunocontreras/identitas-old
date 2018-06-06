@@ -25,7 +25,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .card {
   width: 19vw;
   height: 15vw;
@@ -33,6 +33,14 @@ export default {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+
+  &:not(.disabled){
+    transition: transform .5s;
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
 }
 .disabled {
   filter: grayscale(100%);
