@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div>Selecciona una carpeta</div>
-    <button @click="selectDirectory">Seleccionar carpeta</button>
+    <div class="popup">
+      <h1>Selecciona una carpeta</h1>
+      <button @click="selectDirectory">Seleccionar carpeta</button>
+    </div>
   </div>
 </template>
 
@@ -36,6 +38,19 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.popup {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 3px 0 rgba(0,0,0,.15);
+  padding: 10px 30px;
+  position: fixed;
+  width: 400px;
+  height: 150px;
+  top: 50%;
+  left: 50%;
+  margin-left: -200px;
+  margin-top: -75px;
+  text-align: center;
+}
 </style>
