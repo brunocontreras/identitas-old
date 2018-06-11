@@ -20,7 +20,7 @@
   },
   "build": {
     "productName": "identitas",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "com.educarpersonas",
     "directories": {
       "output": "build"
     },
