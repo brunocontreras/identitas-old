@@ -9,7 +9,7 @@
 export default {
   name: 'AppVideoBackground',
   data: () => ({
-    source: '/static/bg_video.mp4'
+    source: 'static/bg_video.mp4'
   })
 }
 </script>

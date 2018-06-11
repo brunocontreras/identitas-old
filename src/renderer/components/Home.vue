@@ -4,22 +4,22 @@
     <app-select-folder v-if="!data" />
     <div class="data-container" v-else>
       <app-card
-        imageUrl="/static/experts.jpg"
+        imageUrl="static/experts.jpg"
         :disabled="data.experts.disabled"
         :section="data.experts.name"
       ></app-card>
       <app-card
-        imageUrl="/static/family.jpg"
+        imageUrl="static/family.jpg"
         :disabled="data.family.disabled"
         :section="data.family.name"
       ></app-card>
       <app-card
-        imageUrl="/static/training.jpg"
+        imageUrl="static/training.jpg"
         :disabled="data.training.disabled"
         :section="data.training.name"
       ></app-card>
       <app-card
-        imageUrl="/static/conferences.jpg"
+        imageUrl="static/conferences.jpg"
         :disabled="data.experts.disabled"
         :section="data.conferences.name"
       ></app-card>
