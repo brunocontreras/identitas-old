@@ -40,7 +40,7 @@ export default {
 
 <style lang="scss" scoped>
 .popup {
-  background-color: #fff;
+  background-color: rgb(179, 131, 224);
   border-radius: 4px;
   box-shadow: 0 2px 3px 0 rgba(0,0,0,.15);
   padding: 10px 30px;
