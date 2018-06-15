@@ -6,7 +6,7 @@
     :md-backdrop="false">
     <md-empty-state
       md-icon="create_new_folder"
-      md-label="Contenido"
+      md-label="Añadir contenido"
       md-description="Para poder mostrar las presentaciones debes seleccionar la carpeta con el contenido.">
       <md-button class="md-raised md-primary" @click="selectDirectory">Seleccionar carpeta</md-button>
     </md-empty-state>
