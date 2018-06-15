@@ -19,6 +19,7 @@ export default {
   height: 100vh;
   position: fixed;
   z-index: -1;
+  object-fit: cover;
 }
 .video-mask {
   background-image: radial-gradient(rgba(0,0,0,.25), rgba(0,0,0,1));
