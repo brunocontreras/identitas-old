@@ -94,10 +94,10 @@ const removeExtension = name => name.replace(/\.[^/.]+$/, '')
 const removeOrder = name => name.replace(/.*?(?=[a-z]|[A-Z])/, '')
 const extractName = name => removeExtension(removeOrder(name))
 
-const audioExtensions = Object.values(data.audios).map(x => x.path.slice(-4)).filter((value, index, self) => {
-  return self.indexOf(value) === index
-})
-console.log(audioExtensions)
+// const audioExtensions = Object.values(data.audios).map(x => x.path.slice(-4)).filter((value, index, self) => {
+//   return self.indexOf(value) === index
+// })
+// console.log(audioExtensions)
 
 // Constructores
 let presentationIdx = 0

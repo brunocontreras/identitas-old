@@ -1,10 +1,16 @@
 <template>
-  <div>
-    <div class="popup">
-      <h1>Selecciona una carpeta</h1>
-      <button @click="selectDirectory">Seleccionar carpeta</button>
-    </div>
-  </div>
+  <md-dialog
+    :md-active="isActive"
+    :md-close-on-esc="false"
+    :md-click-outside-to-close="false"
+    :md-backdrop="false">
+    <md-empty-state
+      md-icon="create_new_folder"
+      md-label="Contenido"
+      md-description="Para poder mostrar las presentaciones debes seleccionar la carpeta con el contenido.">
+      <md-button class="md-raised md-primary" @click="selectDirectory">Seleccionar carpeta</md-button>
+    </md-empty-state>
+  </md-dialog>
 </template>
 
 <script>
@@ -12,6 +18,9 @@ import readRootDirectory from '@/logic'
 import { mapMutations } from 'vuex'
 export default {
   name: 'AppSelectFolder',
+  props: {
+    isActive: Boolean
+  },
   methods: {
     ...mapMutations([
       'SET_DATA',
@@ -37,20 +46,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.popup {
-  background-color: rgb(179, 131, 224);
-  border-radius: 4px;
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,.15);
-  padding: 10px 30px;
-  position: fixed;
-  width: 400px;
-  height: 150px;
-  top: 50%;
-  left: 50%;
-  margin-left: -200px;
-  margin-top: -75px;
-  text-align: center;
-}
-</style>

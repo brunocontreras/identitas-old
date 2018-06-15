@@ -1,8 +1,8 @@
 <template>
   <div>
-    <app-video-background @canPlay="handleCanPlay" />
-    <app-select-folder v-if="!data" />
-    <div class="data-container" v-else>
+    <app-video-background @loaded="onVideoLoaded" />
+    <app-select-folder :isActive="showFolderSelecter" />
+    <div class="data-container" v-if="data">
       <app-card
         imageUrl="static/experts.jpg"
         :disabled="data.experts.disabled"
@@ -34,7 +34,7 @@
         </li>
       </ul> -->
     </div>
-    <div class="loading" :class="{ hide: videoLoaded }"></div>
+    <div class="loading" :class="{ hide: videoLoaded }" @transitionend="onLoaded"></div>
   </div>
 </template>
 
@@ -54,14 +54,21 @@ export default {
     AppCard
   },
   data: () => ({
-    videoLoaded: false
+    videoLoaded: false,
+    isLoading: true
   }),
   computed: {
-    ...mapState(['data'])
+    ...mapState(['data']),
+    showFolderSelecter () {
+      return !this.data && this.videoLoaded && !this.isLoading
+    }
   },
   methods: {
-    handleCanPlay () {
+    onVideoLoaded () {
       this.videoLoaded = true
+    },
+    onLoaded () {
+      this.isLoading = false
     }
   }
 }
