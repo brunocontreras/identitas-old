@@ -23,7 +23,7 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   font-size: 1.4rem;
 }
 @font-face {
