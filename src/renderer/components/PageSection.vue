@@ -14,7 +14,7 @@
             </md-card-header>
             <md-card-content>
               <md-avatar v-for="presentation in course.presentations" :key="presentation">
-                <img :src="data.presentations[presentation].slides[0]">
+                <img class="image" :src="data.presentations[presentation].slides[0]" @load="onImageLoaded">
               </md-avatar>
             </md-card-content>
           </md-ripple>
@@ -26,7 +26,7 @@
         <md-card md-with-hover v-for="presentation in section.presentations" :key="presentation">
           <md-ripple>
             <md-card-media>
-              <img :src="data.presentations[presentation].slides[0]">
+              <img class="image" :src="data.presentations[presentation].slides[0]" @load="onImageLoaded">
             </md-card-media>
             <md-card-header>
               <div class="md-title">{{ data.presentations[presentation].name }}</div>
@@ -53,7 +53,6 @@ export default {
   computed: {
     ...mapState(['data']),
     section () {
-      debugger
       let section = this.data[this.level1]
       if (this.level2) {
         section = section.courses.find(x => x.name === this.level2)
@@ -63,8 +62,10 @@ export default {
   },
   methods: {
     goToCourse (course) {
-      debugger
       this.$router.push(`/section/${this.level1}/${course.name}`)
+    },
+    onImageLoaded (event) {
+      event.target.classList.add('image--show')
     }
   }
 }
@@ -93,5 +94,12 @@ export default {
 }
 .md-avatar {
   margin: 2px;
+}
+.image {
+  opacity: 0;
+  transition: opacity .25s;
+}
+.image--show {
+  opacity: 1;
 }
 </style>

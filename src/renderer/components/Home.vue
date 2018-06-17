@@ -83,7 +83,7 @@ export default {
   },
   created () {
     const root = localStorage.getItem('root')
-    if (root) this.READ_ROOT_DIRECTORY(root)
+    if (root && !this.data) this.READ_ROOT_DIRECTORY(root)
   }
 }
 </script>
