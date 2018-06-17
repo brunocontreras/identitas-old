@@ -34,13 +34,13 @@
         </li>
       </ul> -->
     </div>
-    <div class="loading" :class="{ hide: videoLoaded }" @transitionend="onLoaded"></div>
+    <div class="loading" :class="{ hide: videoLoaded }" @transitionend="onLoadingFinished"></div>
   </div>
 </template>
 
 <script>
 /* Logic */
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 /* Components */
 import AppVideoBackground from '@/components/AppVideoBackground'
 import AppSelectFolder from '@/components/AppSelectFolder'
@@ -64,12 +64,17 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['READ_ROOT_DIRECTORY']),
     onVideoLoaded () {
       this.videoLoaded = true
     },
-    onLoaded () {
+    onLoadingFinished () {
       this.isLoading = false
     }
+  },
+  created () {
+    const root = localStorage.getItem('root')
+    if (root) this.READ_ROOT_DIRECTORY(root)
   }
 }
 </script>

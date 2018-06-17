@@ -14,26 +14,23 @@
 </template>
 
 <script>
-import readRootDirectory from '@/logic'
-import { mapMutations } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'AppSelectFolder',
   props: {
     isActive: Boolean
   },
   methods: {
-    ...mapMutations([
-      'SET_DATA',
-      'SET_LOG'
+    ...mapActions([
+      'READ_ROOT_DIRECTORY'
     ]),
     selectedDirectory (paths) {
       if (paths === undefined) {
         console.warn('No se escogió ninguna carpeta')
       } else {
         const dir = paths[0]
-        const { data, log } = readRootDirectory(dir)
-        this.SET_DATA(data)
-        this.SET_LOG(log)
+        localStorage.setItem('root', dir)
+        this.READ_ROOT_DIRECTORY(dir)
       }
     },
     selectDirectory () {
