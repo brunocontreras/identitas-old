@@ -13,6 +13,12 @@ export default new Router({
     {
       path: '*',
       redirect: '/'
+    },
+    {
+      path: '/section/:name',
+      name: 'section',
+      component: require('@/components/PageSection').default,
+      props: true
     }
   ]
 })
