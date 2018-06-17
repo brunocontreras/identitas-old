@@ -15,7 +15,7 @@ export default new Router({
       redirect: '/'
     },
     {
-      path: '/section/:name',
+      path: '/section/:level1/:level2?',
       name: 'section',
       component: require('@/components/PageSection').default,
       props: true
