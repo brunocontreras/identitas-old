@@ -1,6 +1,7 @@
 <template>
   <div class="presentation">
     <vue-displacement-slideshow
+      v-if="false"
       :images="images"
       displacement="../static/displacement.png"
       :intensity="0.5"
@@ -9,6 +10,9 @@
       ease="Expo.easeInOut"
       ref="slideshow">
     </vue-displacement-slideshow>
+    <vue-plyr>
+      <video :src="video"></video>
+    </vue-plyr>
   </div>
 </template>
 
@@ -28,13 +32,16 @@ export default {
     ...mapState(['data']),
     images () {
       return this.data.presentations[this.id].slides
+    },
+    video () {
+      return this.data.videos[this.data.presentations[this.id].videos[0]].path
     }
   },
   mounted () {
-    setInterval(() => {
-      this.$refs.slideshow.next()
-      console.log('next')
-    }, 2500)
+    // setInterval(() => {
+    //   this.$refs.slideshow.next()
+    //   console.log('next')
+    // }, 2500)
   }
 }
 </script>
