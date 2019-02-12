@@ -23,7 +23,7 @@
     </div>
     <div v-else-if="section.presentations">
       <div class="grid">
-        <md-card md-with-hover v-for="presentation in section.presentations" :key="presentation">
+        <md-card md-with-hover v-for="presentation in section.presentations" :key="presentation" @click.native="goToPresentation(presentation)">
           <md-ripple>
             <md-card-media>
               <img class="image" :src="data.presentations[presentation].slides[0]" @load="onImageLoaded">
@@ -63,6 +63,9 @@ export default {
   methods: {
     goToCourse (course) {
       this.$router.push(`/section/${this.level1}/${course.name}`)
+    },
+    goToPresentation (presentation) {
+      this.$router.push(`/presentation/${presentation}`)
     },
     onImageLoaded (event) {
       event.target.classList.add('image--show')

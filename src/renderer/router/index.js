@@ -8,7 +8,7 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: require('@/components/Home').default
+      component: require('@/components/PageHome').default
     },
     {
       path: '*',
@@ -18,6 +18,12 @@ export default new Router({
       path: '/section/:level1/:level2?',
       name: 'section',
       component: require('@/components/PageSection').default,
+      props: true
+    },
+    {
+      path: '/presentation/:id',
+      name: 'presentation',
+      component: require('@/components/PagePresentation').default,
       props: true
     }
   ]
