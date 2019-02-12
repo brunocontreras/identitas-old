@@ -83,8 +83,8 @@ export default {
   overflow-y: auto;
 }
 .md-card {
-  flex-basis: 20%;
-  min-width: 320px;
+  flex-basis: 20vw;
+  min-width: 18vw;
   margin: 2.5%;
   margin-left: 0;
   overflow: hidden;
